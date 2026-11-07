@@ -1,0 +1,26 @@
+{
+  "name": "adacik-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test:carbon": "tsx src/carbon.test.ts",
+    "test:e2e": "tsx scripts/e2e.ts",
+    "models": "tsx scripts/list-models.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^3.0.0",
+    "@hono/node-server": "^2.1.6",
+    "dotenv": "^18.0.9",
+    "hono": "^4.13.17",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
