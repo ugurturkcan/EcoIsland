@@ -37,7 +37,7 @@ export default function AdaTab() {
         <T v="h2" style={{ marginTop: 4 }}>{L.name}</T>
 
         {locked ? (
-          <T v="small" color={colors.muted} style={{ marginTop: 6 }}>{`${L.minKg} kg CO₂e kaçınınca açılır. Şu an ${fmtKg(avoidedG)} kg.`}</T>
+          <T v="small" color={colors.muted} style={{ marginTop: 6 }}>{`${L.minKg.toLocaleString('tr-TR')} kg CO₂e kaçınınca açılır. Şu an ${fmtKg(avoidedG)} kg.`}</T>
         ) : (
           <>
             <T v="small" color={colors.muted} style={{ marginTop: 6 }}>{`${fmtKg(avoidedG)} kg CO₂e · ${saved} eşya · ${saplings} gerçek fidan`}</T>

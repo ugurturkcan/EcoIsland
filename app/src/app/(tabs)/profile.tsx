@@ -79,7 +79,7 @@ export default function ProfileTab() {
               </View>
               <View style={{ flex: 1 }}>
                 <T v="title" color={current ? colors.onInk : l.n > lv.n ? colors.muted : colors.ink}>{l.name}</T>
-                <T v="caption" color={current ? colors.onInkMuted : colors.muted}>{l.minKg ? `${l.minKg} kg CO₂e` : 'Başlangıç'}</T>
+                <T v="caption" color={current ? colors.onInkMuted : colors.muted}>{l.minKg ? `${l.minKg.toLocaleString('tr-TR')} kg CO₂e` : 'Başlangıç'}</T>
               </View>
               {current && <T v="caption" color={colors.lime} style={{ fontFamily: fonts.semibold }}>Şu an</T>}
             </View>
@@ -95,8 +95,6 @@ export default function ProfileTab() {
 
       <T v="label" color={colors.muted} style={{ marginTop: space.xxl }}>Ayarlar</T>
       <View style={{ marginTop: space.sm }}>
-        <Row title="Verilerin" detail="Sadece bu cihazda" />
-        <Divider />
         <Row
           title="Rakamlar nereden geliyor?"
           note="Karbon katsayıları İngiltere hükümetinin DEFRA 2025 tablolarından, gazların ısınma etkisi BM iklim panelinin IPCC AR5 raporundan. Su: Water Footprint Network ve EPA."

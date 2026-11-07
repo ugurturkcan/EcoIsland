@@ -1,0 +1,21 @@
+{
+  "name": "ecoisland-promo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render src/index.ts EcoPromo out/ecoisland-promo.mp4 --codec=h264 --crf=20",
+    "still": "remotion still src/index.ts EcoPromo out/poster.png --frame=90"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.541",
+    "@remotion/google-fonts": "^4.0.541",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.541"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
