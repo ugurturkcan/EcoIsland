@@ -1,6 +1,5 @@
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Island3D } from '@/components/Island3D';
 import { Em, Footer, PrimaryButton, Screen, T } from '@/components/ui';
@@ -9,29 +8,43 @@ import { useStore, type Choice } from '@/store';
 import { colors, fonts, radius, space } from '@/theme';
 import { HOME } from '@/routes';
 
-const YEARS = [0, 10, 50, 200, 450];
+const TR_POP = 85_000_000;   // TÜİK 2024 ≈ 85,6 milyon
+const CAR_KG_PER_KM = 0.17304; // DEFRA 2025, ortalama araba
+const EARTH_KM = 40_075;
 
-function trashStage(y: number, label: string) {
-  if (y === 0) return 'Eşya çöp kutusunda. Yolculuk başlıyor.';
-  if (y <= 10) return 'Rüzgârla denize ulaştı, güneşte kırılganlaşıyor.';
-  if (y <= 50) return 'Parçalanıyor; balıklar mikroplastik yutuyor.';
-  if (y <= 200) return 'Hâlâ denizde: binlerce mikroplastik parça.';
-  return `${label} sonra bile tamamen yok olmadı.`;
+const fmt = (n: number) => Math.round(n).toLocaleString('tr-TR');
+
+function CompareRow({ label, trash, mine }: { label: string; trash: string; mine: string }) {
+  return (
+    <View style={st.cmpRow}>
+      <T v="caption" color={colors.muted} style={st.cmpLabel}>{label}</T>
+      <View style={[st.cmpCell, { backgroundColor: colors.paperRaised }]}><T v="small">{trash}</T></View>
+      <View style={[st.cmpCell, { backgroundColor: colors.moss }]}><T v="small" color={colors.onInk}>{mine}</T></View>
+    </View>
+  );
 }
 
 export default function Result() {
   const { choice = 'recycle' } = useLocalSearchParams<{ choice?: Choice }>();
   const s = useStore();
-  const [yi, setYi] = useState(0);
   if (!s.scan) return <Redirect href={HOME} />;
 
   const accepted = true;
   const lvNow = levelFor(s.avoidedG);
   const leveledUp = lvNow.n > s.levelBefore;
   const newSapling = saplingsFor(s.avoidedG) > s.saplingsBefore;
-  const y = YEARS[yi];
-  const mine = choice === 'upcycle' ? `${s.idea?.title_tr ?? 'Yeni ürünün'} hâlâ kullanımda. Çöpe bir eşya eksik gitti.`
-    : choice === 'recycle' ? 'Eşya yeni bir ürünün hammaddesi oldu.' : 'Bu sefer çöpe gitti. Bir sonraki eşyada adan seni bekliyor.';
+  const c = s.scan.carbon;
+  const isTrash = choice === 'trash';
+  // Çöpe atıldıysa karşılaştırma "yeni hayat verseydin" senaryosuyla yapılır.
+  const perPersonG = isTrash ? c.avoided.upcycleG : s.lastAwardG;
+  const scaleT = (perPersonG * TR_POP) / 1e6;
+  const laps = (scaleT * 1000) / CAR_KG_PER_KM / EARTH_KM;
+  const wasted = `${fmt(c.productionG)} g CO₂e ve ${c.water.productionL.toLocaleString('tr-TR')} L su boşa gider`;
+  const mineCol = isTrash
+    ? { head: 'Yeni hayat verseydin', where: 'Evinde yeni bir eşya', end: `−${fmt(c.avoided.upcycleG)} g CO₂e, −${c.water.savedUpcycleL.toLocaleString('tr-TR')} L su` }
+    : choice === 'upcycle'
+      ? { head: 'Senin seçimin', where: s.idea?.title_tr ?? 'Yeni bir eşya', end: 'Çöpe bir eşya eksik gitti' }
+      : { head: 'Senin seçimin', where: `${c.bin} kutusu, yeni ürüne hammadde`, end: 'Malzeme döngüde kaldı' };
 
   const goHome = () => { s.resetFlow(); router.dismissTo(HOME); };
 
@@ -57,31 +70,24 @@ export default function Result() {
           </View>
         )}
 
-        <T v="h1">Ya <Em size={34} color={colors.clay}>çöpe</Em> atsaydın?</T>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <View style={[st.sim, { backgroundColor: colors.sand }]}>
-            <T v="label" color={colors.clay}>Çöpe atsaydın</T>
-            <T v="small" color={colors.inkSoft}>{trashStage(y, s.scan.carbon.decompositionLabel)}</T>
+        <T v="h1">{isTrash ? 'Ya yeni hayat verseydin?' : <>Ya <Em size={34} color={colors.clay}>çöpe</Em> atsaydın?</>}</T>
+        <View style={st.cmp}>
+          <View style={st.cmpRow}>
+            <View style={st.cmpLabel} />
+            <View style={[st.cmpHead, { backgroundColor: colors.sand }]}><T v="label" color={colors.clay}>{isTrash ? 'Çöpe gitti' : 'Çöpe atsaydın'}</T></View>
+            <View style={[st.cmpHead, { backgroundColor: colors.ink }]}><T v="label" color={colors.lime}>{mineCol.head}</T></View>
           </View>
-          <View style={[st.sim, { backgroundColor: colors.ink }]}>
-            <T v="label" color={colors.lime}>Senin seçimin</T>
-            <T v="small" color={colors.onInkMuted}>{mine}</T>
-          </View>
+          <CompareRow label="Doğada" trash={`${c.decompositionLabel} kalır`} mine={choice === 'recycle' ? 'Yeniden üretime girer' : 'Kullanımda'} />
+          <CompareRow label="Nereye" trash="Çöp sahası, oradan doğaya" mine={mineCol.where} />
+          <CompareRow label="Sonu" trash={wasted} mine={mineCol.end} />
         </View>
-        <View style={{ gap: space.sm }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <T v="small" color={colors.muted}>Zamanı ilerlet</T>
-            <T v="label">{y === 0 ? 'Bugün' : `${y} yıl sonra`}</T>
+
+        {perPersonG > 0 && (
+          <View style={st.scale}>
+            <T v="label" color={colors.skyInk}>{isTrash ? 'Herkes yeni hayat verseydi' : 'Herkes bunu yapsaydı'}</T>
+            <T v="small">{`85 milyon kişi aynısını yapsa ${fmt(scaleT)} ton CO₂e kaçınılır: arabayla Dünya'yı ${fmt(laps)} kez dolaşmak kadar.`}</T>
           </View>
-          <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole="tablist">
-            {YEARS.map((yr, i) => (
-              <Pressable key={yr} accessibilityRole="tab" accessibilityState={{ selected: i === yi }} onPress={() => setYi(i)}
-                style={[st.year, i <= yi ? { backgroundColor: colors.moss, borderColor: colors.moss } : { borderColor: colors.lineStrong }]}>
-                <T v="caption" color={i <= yi ? colors.onInk : colors.ink} style={{ fontFamily: fonts.semibold }}>{yr === 0 ? 'Bugün' : String(yr)}</T>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+        )}
 
         <View style={st.level}>
           <Island3D level={lvNow.n} zoom={15} cy={0.5} style={{ height: 210 }} />
@@ -101,7 +107,11 @@ export default function Result() {
 const st = StyleSheet.create({
   badge: { alignSelf: 'flex-start', borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 8 },
   award: { flex: 1, borderRadius: radius.lg, padding: space.lg, gap: 4 },
-  sim: { flex: 1, borderRadius: radius.lg, padding: 14, gap: space.sm, minHeight: 150 },
-  year: { flex: 1, minHeight: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  cmp: { borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.line },
+  cmpRow: { flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
+  cmpLabel: { width: 64, padding: 10 },
+  cmpHead: { flex: 1, paddingHorizontal: 10, paddingVertical: 8 },
+  cmpCell: { flex: 1, padding: 10 },
+  scale: { backgroundColor: colors.sky, borderRadius: radius.lg, padding: space.lg, gap: 4 },
   level: { borderRadius: radius.xl, overflow: 'hidden', backgroundColor: colors.moss },
 });

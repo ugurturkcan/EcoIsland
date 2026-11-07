@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Island3D } from '@/components/Island3D';
@@ -27,10 +27,9 @@ export default function AdaTab() {
 
       <View pointerEvents="box-none" style={[st.top, { paddingTop: insets.top + space.sm }]}>
         <View style={st.brand}>
-          <View style={st.logo}><View style={st.logoIsland} /></View>
-          <T v="h3" style={{ fontFamily: fonts.bold, letterSpacing: -0.8 }}>adacık</T>
+          <Image source={require('../../../assets/images/logo-island.png')} style={st.logo} accessibilityIgnoresInvertColors />
+          <T v="h3" style={{ fontFamily: fonts.bold, letterSpacing: -0.8 }}>Eco Island</T>
         </View>
-        <View style={st.chip}><T v="label">3D dünya</T></View>
       </View>
 
       <View style={[st.card, { bottom: insets.bottom + 92 }]}>
@@ -64,7 +63,6 @@ export default function AdaTab() {
             );
           })}
         </View>
-        <T v="label" color={colors.skyInk} style={{ marginTop: space.md }}>Sürükle: etrafında dön · iki parmak: yakınlaş</T>
       </View>
     </View>
   );
@@ -72,10 +70,8 @@ export default function AdaTab() {
 
 const st = StyleSheet.create({
   top: { position: 'absolute', left: 0, right: 0, top: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space.gutter },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.paper, borderRadius: radius.pill, paddingLeft: 6, paddingRight: 14, height: 44 },
-  logo: { width: 30, height: 30, borderRadius: 15, backgroundColor: colors.moss, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 8 },
-  logoIsland: { width: 18, height: 8, borderRadius: 8, backgroundColor: colors.lime },
-  chip: { backgroundColor: colors.paper, borderRadius: radius.pill, paddingHorizontal: 12, height: 32, justifyContent: 'center' },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.paper, borderRadius: radius.pill, paddingLeft: 2, paddingRight: 16, height: 48 },
+  logo: { width: 40, height: 40 },
   card: { position: 'absolute', left: 12, right: 12, backgroundColor: colors.paper, borderRadius: radius.xl, padding: space.xl },
   levels: { flexDirection: 'row', gap: 6, marginTop: space.lg },
   lvl: { flex: 1, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },

@@ -1,9 +1,9 @@
 export const LEVELS = [
-  { n: 1, name: 'Atık Kıran', minKg: 0 },
-  { n: 2, name: 'Yol Açıcı', minKg: 0.3 },
-  { n: 3, name: 'Yuva Kuran', minKg: 1.5 },
-  { n: 4, name: 'Yaban Koruyucusu', minKg: 5 },
-  { n: 5, name: 'Ada Bilgesi', minKg: 10 },
+  { n: 1, name: 'Çaylak Ayrıştırıcı', minKg: 0 },
+  { n: 2, name: 'Bilinçli Toplayıcı', minKg: 0.3 },
+  { n: 3, name: 'Dönüştürücü', minKg: 1.5 },
+  { n: 4, name: 'Atık Kıran', minKg: 5 },
+  { n: 5, name: 'Sıfır Atık Ustası', minKg: 10 },
 ];
 
 /** Her 5 kg kaçınılan CO2e için sponsor fonuyla bir gerçek fidan (demo modunda). */

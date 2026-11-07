@@ -16,11 +16,14 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Row({ title, detail, onPress, danger }: { title: string; detail?: string; onPress?: () => void; danger?: boolean }) {
+function Row({ title, note, detail, onPress, danger }: { title: string; note?: string; detail?: string; onPress?: () => void; danger?: boolean }) {
   return (
     <Pressable accessibilityRole={onPress ? 'button' : undefined} onPress={onPress} disabled={!onPress}
-      style={({ pressed }) => [st.row, { opacity: pressed ? 0.6 : 1 }]}>
-      <T v="bodyStrong" color={danger ? colors.clay : colors.ink} style={{ flex: 1 }}>{title}</T>
+      style={({ pressed }) => [st.row, { opacity: pressed ? 0.6 : 1 }, note ? { paddingVertical: space.sm } : null]}>
+      <View style={{ flex: 1, gap: 2 }}>
+        <T v="bodyStrong" color={danger ? colors.clay : colors.ink}>{title}</T>
+        {note ? <T v="small" color={colors.muted}>{note}</T> : null}
+      </View>
       {detail ? <T v="small" color={colors.muted}>{detail}</T> : null}
       {onPress ? <T v="title" color={colors.muted}>›</T> : null}
     </Pressable>
@@ -94,7 +97,10 @@ export default function ProfileTab() {
       <View style={{ marginTop: space.sm }}>
         <Row title="Verilerin" detail="Sadece bu cihazda" />
         <Divider />
-        <Row title="Hesap yöntemi" detail="DEFRA 2025 · IPCC AR5" />
+        <Row
+          title="Rakamlar nereden geliyor?"
+          note="Karbon katsayıları İngiltere hükümetinin DEFRA 2025 tablolarından, gazların ısınma etkisi BM iklim panelinin IPCC AR5 raporundan. Su: Water Footprint Network ve EPA."
+        />
         <Divider />
         <Row title="Tüm verileri sıfırla" danger onPress={reset} />
       </View>
