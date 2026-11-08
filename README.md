@@ -1,4 +1,4 @@
-# Adacık · Atmadan önce bir bak
+# EcoIsland · Atmadan önce bir bak
 
 > EkoZeka hackathon projesi. Bu repodaki kodun tamamı hackathon'un 24 saati içinde yazıldı.
 
